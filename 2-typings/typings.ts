@@ -75,9 +75,9 @@ function toWords(number: number | string, asOrdinal?: boolean) {
   return asOrdinal ? makeOrdinal(words) : words;
 }
 
-function generateWords(number: number, words?: Array<string | undefined>) {
+function generateWords(number: number, words?: Array<string>) {
   let remainder: number = 0;
-  let word: string = "";
+  let word: string | undefined = "";
 
   // We’re done
   if (number === 0) {
@@ -125,7 +125,7 @@ function generateWords(number: number, words?: Array<string | undefined>) {
       generateWords(Math.floor(number / ONE_QUADRILLION)) + " quadrillion,";
   }
 
-  words.push(word);
+  if (word) words.push(word);
   return generateWords(remainder, words);
 }
 
