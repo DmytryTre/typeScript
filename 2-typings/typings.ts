@@ -75,8 +75,9 @@ function toWords(number: number | string, asOrdinal?: boolean) {
   return asOrdinal ? makeOrdinal(words) : words;
 }
 
-function generateWords(number?: number, words?: Array<string | undefined>) {
-  let remainder, word;
+function generateWords(number: number, words?: Array<string | undefined>) {
+  let remainder: number = 0;
+  let word: string = "";
 
   // We’re done
   if (number === 0) {
@@ -87,43 +88,41 @@ function generateWords(number?: number, words?: Array<string | undefined>) {
     words = [];
   }
   // If negative, prepend “minus”
-  if (number) {
-    if (number < 0) {
-      words.push("minus");
-      number = Math.abs(number);
-    }
+  if (number < 0) {
+    words.push("minus");
+    number = Math.abs(number);
+  }
 
-    if (number < 20) {
+  if (number < 20) {
+    remainder = 0;
+    word = LESS_THAN_TWENTY[number];
+  } else if (number < ONE_HUNDRED) {
+    remainder = number % TEN;
+    word = TENTHS_LESS_THAN_HUNDRED[Math.floor(number / TEN)];
+    // In case of remainder, we need to handle it here to be able to add the “-”
+    if (remainder) {
+      word += "-" + LESS_THAN_TWENTY[remainder];
       remainder = 0;
-      word = LESS_THAN_TWENTY[number];
-    } else if (number < ONE_HUNDRED) {
-      remainder = number % TEN;
-      word = TENTHS_LESS_THAN_HUNDRED[Math.floor(number / TEN)];
-      // In case of remainder, we need to handle it here to be able to add the “-”
-      if (remainder) {
-        word += "-" + LESS_THAN_TWENTY[remainder];
-        remainder = 0;
-      }
-    } else if (number < ONE_THOUSAND) {
-      remainder = number % ONE_HUNDRED;
-      word = generateWords(Math.floor(number / ONE_HUNDRED)) + " hundred";
-    } else if (number < ONE_MILLION) {
-      remainder = number % ONE_THOUSAND;
-      word = generateWords(Math.floor(number / ONE_THOUSAND)) + " thousand,";
-    } else if (number < ONE_BILLION) {
-      remainder = number % ONE_MILLION;
-      word = generateWords(Math.floor(number / ONE_MILLION)) + " million,";
-    } else if (number < ONE_TRILLION) {
-      remainder = number % ONE_BILLION;
-      word = generateWords(Math.floor(number / ONE_BILLION)) + " billion,";
-    } else if (number < ONE_QUADRILLION) {
-      remainder = number % ONE_TRILLION;
-      word = generateWords(Math.floor(number / ONE_TRILLION)) + " trillion,";
-    } else if (number <= MAX) {
-      remainder = number % ONE_QUADRILLION;
-      word =
-        generateWords(Math.floor(number / ONE_QUADRILLION)) + " quadrillion,";
     }
+  } else if (number < ONE_THOUSAND) {
+    remainder = number % ONE_HUNDRED;
+    word = generateWords(Math.floor(number / ONE_HUNDRED)) + " hundred";
+  } else if (number < ONE_MILLION) {
+    remainder = number % ONE_THOUSAND;
+    word = generateWords(Math.floor(number / ONE_THOUSAND)) + " thousand,";
+  } else if (number < ONE_BILLION) {
+    remainder = number % ONE_MILLION;
+    word = generateWords(Math.floor(number / ONE_MILLION)) + " million,";
+  } else if (number < ONE_TRILLION) {
+    remainder = number % ONE_BILLION;
+    word = generateWords(Math.floor(number / ONE_BILLION)) + " billion,";
+  } else if (number < ONE_QUADRILLION) {
+    remainder = number % ONE_TRILLION;
+    word = generateWords(Math.floor(number / ONE_TRILLION)) + " trillion,";
+  } else if (number <= MAX) {
+    remainder = number % ONE_QUADRILLION;
+    word =
+      generateWords(Math.floor(number / ONE_QUADRILLION)) + " quadrillion,";
   }
 
   words.push(word);
