@@ -1,48 +1,86 @@
 class CustomMap<K, V> {
-  private entries: Array<[K, V]> = [];
+  private readonly bucketCount = 32;
+
+  private buckets: Array<Array<[K, V]>>;
+
+  private _size = 0;
+
+  private initBuckets(): void {
+    this.buckets = Array.from({ length: this.bucketCount }, () => []);
+  }
+
+  constructor() {
+    this.initBuckets();
+  }
+
+  private getBucketIndex(key: K): number {
+    let hashString = "";
+
+    if (typeof key === "object" && key !== null) {
+      hashString = JSON.stringify(key);
+    } else {
+      hashString = String(key);
+    }
+    let hash = 0;
+    for (let i = 0; i < hashString.length; i++) {
+      hash += hashString.charCodeAt(i);
+    }
+
+    return hash % this.bucketCount;
+  }
 
   set(key: K, value: V): this {
-    let isUpdated = false;
+    const bucketIndex = this.getBucketIndex(key);
+    const bucket = this.buckets[bucketIndex]!;
 
-    for (const item of this.entries) {
-      if (item[0] === key) {
+    for (let i = 0; i < bucket.length; i++) {
+      const item = bucket[i];
+      if (item && Object.is(item[0], key)) {
         item[1] = value;
-        isUpdated = true;
-        break;
+        return this;
       }
     }
 
-    if (!isUpdated) {
-      this.entries.push([key, value]);
-    }
-
+    bucket.push([key, value]);
+    this._size++;
     return this;
   }
   get(key: K): V | null {
-    for (const item of this.entries) {
-      if (item[0] === key) {
+    const bucketIndex = this.getBucketIndex(key);
+    const bucket = this.buckets[bucketIndex]!;
+
+    for (let i = 0; i < bucket.length; i++) {
+      const item = bucket[i];
+      if (item && Object.is(item[0], key)) {
         return item[1];
       }
     }
+
     return null;
   }
 
   delete(key: K): boolean {
-    for (let i = 0; i < this.entries.length; i++) {
-      const e = this.entries[i];
-      if (e && e[0] === key) {
-        this.entries.splice(i, 1);
+    const bucketIndex = this.getBucketIndex(key);
+    const bucket = this.buckets[bucketIndex]!;
+
+    for (let i = 0; i < bucket.length; i++) {
+      const item = bucket[i];
+      if (item && Object.is(item[0], key)) {
+        bucket.splice(i, 1);
+        this._size--;
         return true;
       }
     }
+
     return false;
   }
 
   clear() {
-    this.entries = [];
+    this.initBuckets();
+    this._size = 0;
   }
 
   get size(): number {
-    return this.entries.length;
+    return this._size;
   }
 }
