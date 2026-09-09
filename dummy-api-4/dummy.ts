@@ -138,3 +138,10 @@ const start = async () => {
 };
 
 start();
+class User {
+  name: string; // Ошибки нет, хотя значение не присвоено!
+
+}
+
+const user = new User();
+console.log(user.name.toUpperCase());
