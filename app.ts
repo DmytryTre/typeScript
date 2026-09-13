@@ -62,3 +62,13 @@ cart.addProduct(new Product(3, "Печенье", 20));
 cart.setDelivery(new ShopDelivery("1"));
 
 console.log(cart.getProducts(), cart.getCartPrice(), "price");
+
+const convertToString = <T>(item: T) => {
+  if (!!item) {
+    if (typeof item === "object") {
+      return JSON.stringify(item);
+    }
+  }
+
+  return null;
+};
