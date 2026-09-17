@@ -4,7 +4,7 @@ const user = {
   skills: ["typescript", "javascript"],
 };
 
-const pickObjectKeys = <T extends Object, K extends keyof T>(
+const pickObjectKeys = <T extends object, K extends keyof T>(
   obj: T,
   keys: K[],
 ): { [P in K]+?: T[P] } => {
