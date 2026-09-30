@@ -1,4 +1,4 @@
-enum HttpMethod {
+export enum HttpMethod {
   Get = "GET",
   Post = "POST",
   Put = "PUT",
@@ -6,7 +6,7 @@ enum HttpMethod {
   Patch = "PATCH",
 }
 
-class RequestBuilder {
+export class RequestBuilder {
   private url: string = "";
   private method: HttpMethod = HttpMethod.Get;
   private headers: Record<string, string> = {};
