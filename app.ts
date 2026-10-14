@@ -1,3 +1,4 @@
+import sortBy from "sort-by";
 class Product {
   constructor(
     public id: number,
@@ -72,3 +73,57 @@ const convertToString = <T>(item: T) => {
 
   return null;
 };
+
+interface IForm {
+  name: string;
+  password: string;
+}
+
+const form: IForm = {
+  name: "Вася",
+  password: "123",
+};
+
+type ModifiredFormToValidation<T> = {
+  [Property in keyof T]:
+    | { isValid?: true }
+    | { isValid: false; errorMessage: string };
+};
+
+const formValidation: ModifiredFormToValidation<IForm> = {
+  name: { isValid: true },
+  password: {
+    isValid: false,
+    errorMessage: "Пароль должен быть длиннее 5 символов",
+  },
+};
+
+const getValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
+type Coordinate = [number, string, boolean];
+type Head<T> = T extends [infer First, ...unknown[]] ? First : never;
+const first: Head<Coordinate> = 42;
+
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
+}
+
+function CreatedAt(t: new (...args: any[]) => {}) {
+  return class extends t {
+    createdAt = new Date();
+  };
+}
+
+const products = [
+  { id: 1, name: "Смартфон", category: "Электроника", price: 50000 },
+  { id: 2, name: "Ноутбук", category: "Электроника", price: 90000 },
+  { id: 3, name: "Чайник", category: "Бытовая техника", price: 3000 },
+  {
+    id: 4,
+    name: "Планшет",
+    category: "Электроника",
+    price: { id: 1, name: "Смартфон", category: "Электроника", price: 50000 },
+  },
+];
+
+const cheapFirst = products.sort(sortBy("price"));
